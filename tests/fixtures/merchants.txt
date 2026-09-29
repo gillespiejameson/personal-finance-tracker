@@ -1,0 +1,79 @@
+# processor prefixes and trailing dates
+SQ *BRIGHTWORKS Chicago IL => Brightworks
+TST*COPPER KETTLE TAP Springfield IL          09/02 => Copper Kettle Tap
+PY *BURGERHAUS  RIVERTON GL RIVERTON IL => Burgerhaus Riverton GL
+SP GREEN LEAF ORGANIC GREENLEAFORGA IL        06/23 => Green Leaf Organic
+SPAFF * MOONPETAL 855-555-0147 CA => Moonpetal
+SP VERDA BEAUTY 184-12345678 CA => Verda Beauty
+SPAFF * PAINTED BIRD 855-555-0147 CA => Painted Bird
+POS DEBIT 06/08 SKYWARD AI 00100000001 => Skyward AI
+GOOGLE *WORKSPACE.SUBMA MOUNTAIN VIEW CA => Workspace.subma
+SXM*SIRIUSXM.COM/ACCT 888-635-5144 NY        07/21 => Siriusxm
+PAYPAL           PURCHASE   GOOGLE STORAGE WEB ID: PAYPALSI00 => Google Storage
+# store numbers, phones, domains, city/state
+# These run WITHOUT a learned city set, so a local city like Springfield or
+# Mapleton is kept: dropping the word before a state code is only safe when
+# three words precede it, the casing breaks, or the word is a known city.
+# In practice loadCities() learns "springfield" from the user's own statements and
+# the builtin aliases (h-e-b, hobbylobby, qt, target t-, 7-eleven) normalize
+# these anyway.
+H-E-B #042 SPRINGFIELD IL => H-E-B Springfield
+HOBBY-LOBBY #0321 SPRINGFIELD IL => Hobby-Lobby Springfield
+HOBBYLOBBY SPRINGFIELD IL                    09/02 => Hobbylobby Springfield
+TARGET T-2045 SPRINGFIELD IL                    07/12 => Target Springfield
+QT 417 SPRINGFIELD IL => QT Springfield
+20481 CAVA SPRINGFIELD IL SPRINGFIELD IL => Cava Springfield
+SHELL OIL 51234567890 MAPLETON IL => Shell Oil Mapleton
+KROGER FUEL CTR #2763 SPRINGFIELD IL => Kroger Fuel Ctr
+AMAZON.COM SEATTLE WA => Amazon
+SKYWARD AI 00100002 United States AZ => Skyward AI
+AMAZON MKTPL*381QX57 Amzn.com/bill WA        08/04 => Amazon Mktpl
+APPLE.COM/BILL 866-712-7753 CA => Apple
+STARBUCKS 800-782-7282 WA => Starbucks
+RAILWAY RAILWAY.COM CA => Railway
+Birch Technologies SAN FRANCISCO CA         06/23 => Birch Technologies
+TACO YARD THE PINES 555-0101234 IL         06/24 => Taco Yard
+BR RANCH, PMA WWW.BRRANCH.C IL               08/02 => BR Ranch, Pma
+XYZ AIRPORT PARKING XYZ AIRPORT IL           06/08 => Xyz Airport Parking
+PINECREST LODGE RESORT BOULDER CO             07/14 => Pinecrest Lodge Resort
+Corner Cafe - Lake City Lake City IL => Corner Cafe - Lake City
+ELENAS CAFE & TORTILLA F SPRINGFIELD IL          07/27 => Elenas Cafe & Tortilla F
+# ACH tails and ids
+Acorns Round-Ups Transfer   X9KQZ41         WEB ID: 9000000001 => Acorns Round-Ups Transfer
+APPLECARD GSBANK PAYMENT    1234567         WEB ID: 9999999999 => Applecard Gsbank Payment
+AFFIRM.COM PAYMENTS 185-87654321 CA          06/18 => Affirm Payments
+fnb              ACH XFER                   WEB ID: 123456789 => Fnb Ach Xfer
+Online Transfer from CHK ...4321 transaction#: 12345678901 => Online Transfer From Chk
+Online Transfer to CHK ...4321 transaction#: 10987654321 12/10 => Online Transfer TO Chk
+# payroll and income
+C123456 ACMEPAY -PAYROLL => Acmepay Payroll
+C123456 ACMEPAY        PAYROLL      PPD ID: 1234567890 => Acmepay Payroll
+Globex Corp -PAYROLL => Globex Corp Payroll
+Justworks -PAYROLL => Justworks Payroll
+Real Time Transfer Recd From Aba/contr Bnk-021000021 From: Venmo Ref: 12345678901234567 Info: Text-rmtinf-instant Transfer => Venmo
+Real Time Transfer Recd From Aba/contr Bnk-021000021 From: Bnf-paypal Ref: 76543210987654321 Info: Text- => PayPal
+ATM CHECK DEPOSIT 08/15 742 NW MAPLE AVE SPRINGFIELD IL => ATM Check Deposit
+Monthly Service Fee => Monthly Service Fee
+Refund SP BANJO BARN LLC MAPLETON IL => Banjo Barn Llc
+# person-to-person
+Zelle payment to Pat house JPM12abcdefg => Pat House
+Zelle payment to Chris - plumber  30000000001 => Chris - Plumber
+Zelle payment from Sam Example 30000000002 => Sam Example
+# guards
+   => Unknown
+POS DEBIT => Unknown
+# robustness
+7ELEVEN SPRINGFIELD IL => 7eleven Springfield
+7-ELEVEN #41276 SPRINGFIELD IL => 7-Eleven Springfield
+K9PAWS DOG TRAINING => K9paws Dog Training
+SUBWAY00051234 LAKE CITY IL => Subway
+PAYPAL *NETFLIX => Netflix
+UBER *TRIP HELP.UBER.COM => Uber Trip
+84 LUMBER LAKE CITY IL => 84 Lumber
+H2FLOW DISTRIBUTORS SPRINGFIELD IL => H2flow Distributors Springfield
+# card digits + cardholder name (credit-union SimpleFIN feed)
+VERCEL INC. VERCEL.COM CA 4242 - FIRST M LAST => Vercel Inc
+ANTHROPIC* CLAUDE SUB ANTHROPIC.COM CA 1357 - JANE ANN-MARIE PUBLIC => Anthropic Claude Sub
+KROGER #1234 SPRINGFIELD IL 5555 - JOHN O'BRIEN => Kroger Springfield
+ACME CORP 123 - FIRST LAST => Acme Corp - First Last
+ACME CORP 1234 - first last => Acme Corp - First Last

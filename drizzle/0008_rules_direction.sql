@@ -1,0 +1,1 @@
+ALTER TABLE `rules` ADD `direction` text DEFAULT 'any' NOT NULL;

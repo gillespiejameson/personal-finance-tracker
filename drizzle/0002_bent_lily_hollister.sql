@@ -1,0 +1,1 @@
+ALTER TABLE `categories` ADD `seed_key` text;

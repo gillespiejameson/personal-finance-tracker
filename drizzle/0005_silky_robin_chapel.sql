@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX `balance_snapshots_account_date_idx` ON `balance_snapshots` (`account_id`,`date`);

@@ -1,0 +1,138 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --color-canvas: #f5f5f7;
+  --color-card: #ffffff;
+  --color-subtle: #efeff4;
+  --color-ink: #1d1d1f;
+  --color-ink-2: #6e6e73;
+  --color-ink-3: #aeaeb2;
+  --color-line: #e5e5ea;
+  --color-accent: #0a84ff;
+  --color-positive: #34c759;
+  --color-negative: #ff3b30;
+  --color-warning: #ff9500;
+
+  --radius-card: 20px;
+  --radius-control: 12px;
+  --radius-pill: 999px;
+
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.06), 0 8px 24px rgba(0, 0, 0, 0.04);
+  --shadow-float: 0 12px 40px rgba(0, 0, 0, 0.12);
+
+  --font-sans:
+    var(--font-inter), ui-sans-serif, system-ui, "Segoe UI", sans-serif;
+
+  --text-display: 40px;
+  --text-display--line-height: 44px;
+  --text-display--letter-spacing: -0.02em;
+  --text-title: 28px;
+  --text-title--line-height: 34px;
+  --text-title--letter-spacing: -0.02em;
+  --text-headline: 20px;
+  --text-headline--line-height: 25px;
+  --text-body: 15px;
+  --text-body--line-height: 20px;
+  --text-caption: 13px;
+  --text-caption--line-height: 18px;
+  --text-micro: 11px;
+  --text-micro--line-height: 13px;
+}
+
+/* shadcn expects these; map them onto our tokens */
+:root {
+  --background: var(--color-canvas);
+  --foreground: var(--color-ink);
+  --card: var(--color-card);
+  --card-foreground: var(--color-ink);
+  --popover: var(--color-card);
+  --popover-foreground: var(--color-ink);
+  --primary: var(--color-accent);
+  --primary-foreground: #ffffff;
+  --secondary: var(--color-subtle);
+  --secondary-foreground: var(--color-ink);
+  --muted: var(--color-subtle);
+  --muted-foreground: var(--color-ink-2);
+  --accent: var(--color-subtle);
+  --accent-foreground: var(--color-ink);
+  --destructive: var(--color-negative);
+  --border: var(--color-line);
+  --input: var(--color-line);
+  --ring: var(--color-accent);
+  --radius: var(--radius-control);
+}
+
+/*
+ * shadcn's generated @theme inline block, kept so component utilities
+ * (bg-popover, bg-primary, bg-muted, font-heading, rounded-xl, etc.) resolve.
+ * Several lines from the original generated output are intentionally dropped.
+ * `--color-card: var(--card)` and `--color-accent: var(--accent)` would
+ * re-declare theme keys we already define directly above (#ffffff and
+ * #0a84ff), creating a circular var() chain (--card -> --color-card ->
+ * --card) and silently replacing our brand accent blue with the neutral
+ * "subtle" gray; `--font-sans: var(--font-sans)` would shadow our Inter
+ * mapping with a self-reference. The `--font-mono`, `--color-sidebar-*` and
+ * `--color-chart-*` lines are gone because nothing in the app references
+ * them and their right-hand variables are never defined.
+ */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-heading: var(--font-sans);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+@layer base {
+  * {
+    @apply border-line;
+  }
+  html {
+    color-scheme: light;
+  }
+  body {
+    @apply bg-canvas text-ink font-sans text-body antialiased;
+  }
+  .tnum {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/*
+ * Recharts makes the svg surface, the pie root and every sector focusable;
+ * a click would otherwise draw the browser's focus rectangle over the donut.
+ * Keyboard users get the same groups from the category table.
+ */
+.recharts-surface:focus,
+.recharts-surface:focus-visible,
+.recharts-pie:focus,
+.recharts-pie:focus-visible,
+.recharts-pie-sector:focus,
+.recharts-pie-sector:focus-visible,
+.recharts-sector:focus,
+.recharts-sector:focus-visible {
+  outline: none;
+}
