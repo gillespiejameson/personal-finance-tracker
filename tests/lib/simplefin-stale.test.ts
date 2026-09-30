@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { addDays, localDay } from "@/lib/dates";
 import {
   STALE_BALANCE_DAYS,
   staleBanks,
@@ -6,9 +7,13 @@ import {
 } from "@/lib/simplefin/stale";
 import type { LinkedAccount } from "@/lib/simplefin/types";
 
-// Noon UTC keeps the local day the same in every US time zone.
 const SYNCED = "2026-09-30T17:00:00.000Z";
 const NOW = new Date("2026-09-30T18:00:00Z");
+// Staleness is measured from the sync's local day, and 17:00 UTC falls on
+// different calendar days around the world, so balance dates count back from
+// that day instead of being fixed (east of UTC+7 it is already October 1).
+const SYNC_DAY = localDay(new Date(SYNCED));
+const ago = (days: number) => addDays(SYNC_DAY, -days);
 
 let nextId = 1;
 const link = (over: Partial<LinkedAccount> = {}): LinkedAccount => ({
@@ -18,7 +23,7 @@ const link = (over: Partial<LinkedAccount> = {}): LinkedAccount => ({
   name: "Checking",
   currency: "USD",
   balanceCents: 10_000,
-  balanceDate: "2026-09-29",
+  balanceDate: ago(1),
   accountId: 1,
   enabled: true,
   lastSyncedAt: SYNCED,
@@ -27,25 +32,25 @@ const link = (over: Partial<LinkedAccount> = {}): LinkedAccount => ({
 
 describe("staleBanks", () => {
   it("is empty before the first sync", () => {
-    expect(staleBanks([link({ balanceDate: "2026-09-01" })], null)).toEqual([]);
+    expect(staleBanks([link({ balanceDate: ago(29) })], null)).toEqual([]);
   });
 
   it("flags a bank whose balance date is more than the threshold behind the last sync", () => {
     expect(STALE_BALANCE_DAYS).toBe(3);
     const accounts = [
-      link({ orgName: "Fresh Bank", balanceDate: "2026-09-29" }),
+      link({ orgName: "Fresh Bank", balanceDate: ago(1) }),
       // Exactly at the threshold is still fine: weekends and bank cut-offs.
-      link({ orgName: "Edge Bank", balanceDate: "2026-09-27" }),
+      link({ orgName: "Edge Bank", balanceDate: ago(3) }),
       link({
         orgName: "Stuck Bank",
         name: "Everyday Checking",
-        balanceDate: "2026-09-16",
+        balanceDate: ago(14),
       }),
     ];
     expect(staleBanks(accounts, SYNCED)).toEqual([
       {
         orgName: "Stuck Bank",
-        lastUpdated: "2026-09-16",
+        lastUpdated: ago(14),
         accounts: ["Everyday Checking"],
       },
     ]);
@@ -56,28 +61,28 @@ describe("staleBanks", () => {
       link({
         orgName: "Stuck Bank",
         name: "Checking",
-        balanceDate: "2026-09-14",
+        balanceDate: ago(16),
       }),
       link({
         orgName: "Stuck Bank",
         name: "Savings",
-        balanceDate: "2026-09-16",
+        balanceDate: ago(14),
       }),
       link({
         orgName: "Another Bank",
         name: "Card",
-        balanceDate: "2026-09-10",
+        balanceDate: ago(20),
       }),
     ];
     expect(staleBanks(accounts, SYNCED)).toEqual([
       {
         orgName: "Another Bank",
-        lastUpdated: "2026-09-10",
+        lastUpdated: ago(20),
         accounts: ["Card"],
       },
       {
         orgName: "Stuck Bank",
-        lastUpdated: "2026-09-16",
+        lastUpdated: ago(14),
         accounts: ["Checking", "Savings"],
       },
     ]);
@@ -88,12 +93,12 @@ describe("staleBanks", () => {
       link({
         orgName: "Mixed Bank",
         name: "Checking",
-        balanceDate: "2026-09-29",
+        balanceDate: ago(1),
       }),
       link({
         orgName: "Mixed Bank",
         name: "Old CD",
-        balanceDate: "2026-08-01",
+        balanceDate: ago(60),
       }),
     ];
     expect(staleBanks(accounts, SYNCED)).toEqual([]);
@@ -101,8 +106,8 @@ describe("staleBanks", () => {
 
   it("ignores accounts that are unmapped, disabled or have no balance date", () => {
     const accounts = [
-      link({ accountId: null, balanceDate: "2026-09-01" }),
-      link({ enabled: false, balanceDate: "2026-09-01" }),
+      link({ accountId: null, balanceDate: ago(29) }),
+      link({ enabled: false, balanceDate: ago(29) }),
       link({ balanceDate: null }),
     ];
     expect(staleBanks(accounts, SYNCED)).toEqual([]);
@@ -110,11 +115,11 @@ describe("staleBanks", () => {
 
   it("falls back to a generic name when SimpleFIN gives no organization", () => {
     expect(
-      staleBanks([link({ orgName: null, balanceDate: "2026-09-01" })], SYNCED),
+      staleBanks([link({ orgName: null, balanceDate: ago(29) })], SYNCED),
     ).toEqual([
       {
         orgName: "SimpleFIN",
-        lastUpdated: "2026-09-01",
+        lastUpdated: ago(29),
         accounts: ["Checking"],
       },
     ]);
