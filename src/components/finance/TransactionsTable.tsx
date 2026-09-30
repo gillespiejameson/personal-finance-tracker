@@ -29,7 +29,8 @@ const SPLIT_PAD = 16;
 /** First-paint guess for the apply-to-all prompt and the bill form. */
 const EXTRA_ROW = 52;
 const UNDO_MS = 10_000;
-const GRID = "grid-cols-[110px_1fr_200px_150px_130px_100px]";
+/** Keep the merchant column wide enough for a split label; narrow tables scroll horizontally. */
+const GRID = "grid-cols-[110px_minmax(100px,1fr)_200px_150px_130px_100px]";
 
 /** The apply-to-all question asked right after an inline category change. */
 type ApplyPrompt = {
@@ -410,7 +411,11 @@ export function TransactionsTable({
                         style={{ height: SPLIT_LINE }}
                       >
                         <span />
-                        <span className="pl-6 text-caption text-ink-3">
+                        {/* Fixed-height split rows need a single-line label, even in a narrow column. */}
+                        <span
+                          className="min-w-0 truncate pl-6 text-caption text-ink-3"
+                          title={`Split line ${i + 1}`}
+                        >
                           Split line {i + 1}
                         </span>
                         <span>
