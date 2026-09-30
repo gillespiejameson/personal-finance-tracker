@@ -76,7 +76,7 @@ export async function claimAccessUrl(
   if (!res.ok) return { ok: false, error: `SimpleFIN returned ${res.status}.` };
   const body = (await res.text()).trim();
   const u = parseSfinUrl(body);
-  if (!u || !u.username || !u.password)
+  if (!u?.username || !u.password)
     return { ok: false, error: UNREADABLE_ERROR };
   return { ok: true, accessUrl: u.toString() };
 }
@@ -115,8 +115,7 @@ export async function fetchAccounts(
   | { ok: false; status?: number; error: string }
 > {
   const u = parseSfinUrl(accessUrl);
-  if (!u || !u.username || !u.password)
-    return { ok: false, error: REJECTED_ERROR };
+  if (!u?.username || !u.password) return { ok: false, error: REJECTED_ERROR };
   let res: Response;
   try {
     res = await fetchFn(accountsUrl(u, window, opts), {

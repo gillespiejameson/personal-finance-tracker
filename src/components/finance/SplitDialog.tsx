@@ -1,12 +1,13 @@
 "use client";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import type { CategoryOption } from "@/actions/review";
 import { AmountText } from "@/components/finance/AmountText";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { parseAmountToCents } from "@/lib/money";
 
-type Line = { categoryId: number; amount: string };
+/** `key` is client-only: it keeps a line's row (and focus) stable while its category changes or other lines are removed. */
+type Line = { key: number; categoryId: number; amount: string };
 type Props = {
   totalCents: number;
   categories: CategoryOption[];
@@ -23,9 +24,10 @@ export function SplitDialog({
   onClose,
 }: Props) {
   const first = categories[0]?.id ?? 0;
+  const nextKey = useRef(2);
   const [lines, setLines] = useState<Line[]>([
-    { categoryId: first, amount: "" },
-    { categoryId: first, amount: "" },
+    { key: 0, categoryId: first, amount: "" },
+    { key: 1, categoryId: first, amount: "" },
   ]);
   const [busy, setBusy] = useState(false);
   const sign = Math.sign(totalCents) || -1;
@@ -57,7 +59,7 @@ export function SplitDialog({
       <div className="grid gap-2">
         {lines.map((l, i) => (
           <div
-            key={`${i}-${l.categoryId}`}
+            key={l.key}
             className="grid grid-cols-[1fr_140px_32px] items-center gap-2"
           >
             <select
@@ -95,7 +97,10 @@ export function SplitDialog({
           variant="outline"
           size="sm"
           onClick={() =>
-            setLines((ls) => [...ls, { categoryId: first, amount: "" }])
+            setLines((ls) => [
+              ...ls,
+              { key: nextKey.current++, categoryId: first, amount: "" },
+            ])
           }
           disabled={lines.length >= 12}
         >

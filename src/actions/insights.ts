@@ -9,6 +9,7 @@ import {
 import { cachedLines } from "@/lib/loaders";
 
 export type { AvgMonths, InsightsPage };
+
 const monthSchema = z.string().regex(/^\d{4}-\d{2}$/);
 const avgSchema = z.union([z.literal("3"), z.literal("6"), z.literal("12")]);
 

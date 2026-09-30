@@ -20,6 +20,7 @@ import {
 import { applyRules, directionOf, ensureUserRule } from "@/lib/rules/engine";
 
 export type { Bill };
+
 type Fail = { ok: false; error: string };
 const id = z.number().int().positive();
 function refresh() {

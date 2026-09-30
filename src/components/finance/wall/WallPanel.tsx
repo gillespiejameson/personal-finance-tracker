@@ -112,6 +112,7 @@ export function WallPanel({ summary }: { summary: WallSummary }) {
               <ul className="flex flex-col gap-1.5">
                 {due.slice(0, 8).map((b, i) => (
                   <li
+                    // biome-ignore lint/suspicious/noArrayIndexKey: a read-only panel re-rendered whole; one merchant can have two bills with the same name
                     key={`${i}-${b.name}`}
                     className="flex items-center gap-3 text-body"
                   >

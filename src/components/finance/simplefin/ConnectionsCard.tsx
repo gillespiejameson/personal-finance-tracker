@@ -318,6 +318,7 @@ export function ConnectionsCard({
               {warnings.map((w, i) => (
                 // Two accounts can report the same wording, so position counts
                 // too; the list is replaced whole on every sync.
+                // biome-ignore lint/suspicious/noArrayIndexKey: see above
                 <li key={`${i}:${w}`}>{w}</li>
               ))}
             </ul>
