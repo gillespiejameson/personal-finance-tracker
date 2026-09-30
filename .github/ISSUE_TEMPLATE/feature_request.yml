@@ -1,0 +1,35 @@
+name: Feature idea
+description: Suggest an improvement or a new feature
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This app is deliberately **local-first and single-household**: one SQLite
+        file on your own machine, no accounts, no cloud backend. Ideas that fit that
+        shape are the most likely to land. For anything big, it's worth agreeing on
+        the approach here before writing code.
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What are you trying to do, and what gets in the way today?
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: What you'd like
+      description: How it could work. Sketches and examples welcome (made-up data only).
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you considered
+  - type: checkboxes
+    id: help
+    attributes:
+      label: Contributing
+      options:
+        - label: I'd like to build this myself.

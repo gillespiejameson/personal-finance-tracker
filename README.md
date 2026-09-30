@@ -23,7 +23,7 @@ npm install
 
 | Command | What it does |
 |---|---|
-| `npm run app` | Builds if needed and opens a chromeless desktop-style window at `localhost:3000` |
+| `npm run app` | Builds if needed and opens a chromeless desktop-style window at `localhost:3000` (uses Edge or Chrome on Windows, Chrome on macOS, Chrome or Chromium on Linux; otherwise it prints the URL) |
 | `npm run dev` | Development server with hot reload |
 | `npm run seed` | **Wipes** the dev database and regenerates 3 months of realistic fake data |
 | `npm run backup` | Snapshots the database into `data/backups/` |
@@ -86,9 +86,13 @@ own**. Do not expose port 3000 to the internet directly; put it behind
 something that authenticates, such as the Cloudflare Access setup in
 `docs/HOUSEHOLD.md`. Never commit your `data/` directory.
 
-## Design notes
+## Contributing
 
-`docs/PLAN.md` has the full plan the app was built from.
+Contributions are welcome — start with [CONTRIBUTING.md](CONTRIBUTING.md).
+[`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) maps the code, and
+`docs/PLAN.md` is the product and design plan the app was built from. Please
+never post real bank data in issues or pull requests; security problems go
+through [SECURITY.md](SECURITY.md).
 
 ## License
 
