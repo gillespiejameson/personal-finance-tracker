@@ -17,7 +17,7 @@ import { SyncNudge } from "@/components/finance/simplefin/SyncNudge";
 import { Card } from "@/components/ui/card";
 import { getDb } from "@/lib/db/client";
 import { queueCount } from "@/lib/review/queue";
-import { relativeSince } from "@/lib/simplefin/relative";
+import { syncCaption } from "@/lib/simplefin/stale";
 import { groupTransactionsHref } from "@/lib/transactions/links";
 
 const monthLabel = (m: string) =>
@@ -67,27 +67,25 @@ export default async function HomePage() {
   const topShare = Math.max(...topCategories.map((r) => r.share), 0.0001);
   const connection = await getConnectionAction();
   const now = new Date();
-  // A failed sync says so here, on the next render, rather than in a toast.
-  const syncLabel = connection.lastError
-    ? "Sync needs attention — open Settings"
-    : connection.lastSyncAt
-      ? `Synced ${relativeSince(connection.lastSyncAt, now)}`
-      : "Not synced yet";
+  // A failed sync, a bank that stopped sending data, or a warning says so
+  // here, on the next render, rather than in a toast.
+  const syncStatus = syncCaption(connection, now);
   return (
     <>
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-title font-semibold">Home</h1>
         {connection.connected && (
           <div className="flex items-center gap-3">
-            <span
-              className={
-                connection.lastError
-                  ? "text-caption text-warning"
-                  : "text-caption text-ink-2"
-              }
-            >
-              {syncLabel}
-            </span>
+            {syncStatus.attention ? (
+              <Link
+                href="/settings"
+                className="text-caption text-warning hover:underline"
+              >
+                {syncStatus.text}
+              </Link>
+            ) : (
+              <span className="text-caption text-ink-2">{syncStatus.text}</span>
+            )}
             <SyncButton />
           </div>
         )}

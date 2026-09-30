@@ -1123,6 +1123,44 @@ describe("runSync", () => {
       warnings: ["Bank X needs re-authentication"],
       requests: 1,
     });
+    // Kept, so an automatic sync's warnings still reach Home and Settings.
+    expect(getConnection(db, NOW).warnings).toEqual([
+      "Bank X needs re-authentication",
+    ]);
+  });
+
+  it("replaces the kept warnings on the next sync, even when there are none", async () => {
+    const { db } = seed();
+    setAccessUrl(db, ACCESS, NOW);
+    let errors = ["Bank X needs re-authentication"];
+    const { fetchFn } = fakeFetch(() => json({ errors, accounts: [] }));
+    await runSync(db, fetchFn, { now: NOW, automatic: true });
+    errors = [];
+    const later = new Date(NOW.getTime() + 60 * 60_000);
+    expect(
+      await runSync(db, fetchFn, { now: later, automatic: true }),
+    ).toMatchObject({ ok: true });
+    expect(getConnection(db, later).warnings).toEqual([]);
+  });
+
+  it("keeps the last sync's warnings when a sync fails or loads older history", async () => {
+    const { db } = seed();
+    setAccessUrl(db, ACCESS, NOW);
+    const warn = fakeFetch(() =>
+      json({ errors: ["Bank X needs re-authentication"], accounts: [] }),
+    );
+    await runSync(db, warn.fetchFn, { now: NOW, automatic: false });
+    const fail = fakeFetch(() => new Response("", { status: 503 }));
+    await runSync(db, fail.fetchFn, { now: NOW, automatic: false });
+    const empty = fakeFetch(() => json({ accounts: [] }));
+    await runSync(db, empty.fetchFn, {
+      now: NOW,
+      automatic: false,
+      olderHistory: true,
+    });
+    expect(getConnection(db, NOW).warnings).toEqual([
+      "Bank X needs re-authentication",
+    ]);
   });
 
   it("stamps every attempt and keeps the error until a sync succeeds", async () => {

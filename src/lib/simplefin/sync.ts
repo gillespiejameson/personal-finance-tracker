@@ -37,6 +37,7 @@ import {
   setLastAttemptAt,
   setLastError,
   setLastSyncAt,
+  setLastWarnings,
   upsertLinkedAccounts,
 } from "./store";
 import type {
@@ -578,6 +579,9 @@ async function runWindows(
     if (fetchedRows === 0) warnings.push(NO_OLDER_WARNING);
   } else {
     setLastSyncAt(db, nowIso);
+    // "Load older history" has its own one-off wording; only a regular sync
+    // speaks for the connection's current state.
+    setLastWarnings(db, warnings);
   }
   setLastError(db, null);
   return { ok: true, results: [...merged.values()], warnings, requests };
