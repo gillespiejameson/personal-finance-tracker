@@ -62,6 +62,14 @@ export type LinkedAccount = {
   lastSyncedAt: string | null;
 };
 
+/** A bank whose SimpleFIN balance dates have fallen behind the last sync. */
+export type StaleBank = {
+  orgName: string;
+  /** The newest balance date among the bank's accounts, `YYYY-MM-DD`. */
+  lastUpdated: string;
+  accounts: string[];
+};
+
 export type Connection = {
   connected: boolean;
   connectedAt: string | null;
@@ -76,6 +84,10 @@ export type Connection = {
   requestsToday: number;
   accounts: LinkedAccount[];
   earliestSynced: string | null;
+  /** The last regular sync's warnings (SimpleFIN's own errors included), kept so an automatic sync's reach the user too. */
+  warnings: string[];
+  /** Banks SimpleFIN has stopped getting fresh data from; see `staleBanks`. */
+  staleBanks: StaleBank[];
   /** Decided on the server: whether opening Home should sync in the background. */
   shouldAutoSync: boolean;
 };

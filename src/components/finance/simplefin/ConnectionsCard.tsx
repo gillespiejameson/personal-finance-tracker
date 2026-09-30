@@ -15,6 +15,7 @@ import { AmountText } from "@/components/finance/AmountText";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { shortDay } from "@/lib/simplefin/stale";
 import { summarize } from "@/lib/simplefin/summary";
 import type { Connection, SyncOutcome } from "@/lib/simplefin/types";
 
@@ -90,7 +91,11 @@ export function ConnectionsCard({
 }: Props) {
   const router = useRouter();
   const [busy, start] = useTransition();
-  const [warnings, setWarnings] = useState<string[]>([]);
+  // This visit's own sync outcome wins (it can carry "Load older history"
+  // wording that is never kept); until then show what the last sync kept.
+  const [ownWarnings, setWarnings] = useState<string[] | null>(null);
+  const warnings = ownWarnings ?? connection.warnings;
+  const staleByOrg = new Map(connection.staleBanks.map((b) => [b.orgName, b]));
   const [confirmDisconnect, setConfirmDisconnect] = useState(false);
   const autoId = useId();
   const rowId = useId();
@@ -211,6 +216,13 @@ export function ConnectionsCard({
               Last sync failed: {connection.lastError}
             </p>
           )}
+          {connection.staleBanks.map((b) => (
+            <p key={b.orgName} className="mt-2 text-caption text-warning">
+              {b.orgName} hasn't sent SimpleFIN new data since{" "}
+              {shortDay(b.lastUpdated)}. Sign in at bridge.simplefin.org and
+              reconnect it, then Sync now.
+            </p>
+          ))}
 
           <div className="mt-4 grid gap-2">
             {connection.accounts.length === 0 && (
@@ -234,6 +246,14 @@ export function ConnectionsCard({
                     <span className="block truncate text-micro text-ink-3">
                       {a.orgName ?? "SimpleFIN"}
                       {usable ? "" : ` · ${a.currency} — not syncable`}
+                      {a.enabled &&
+                        a.accountId !== null &&
+                        a.balanceDate &&
+                        staleByOrg.has(a.orgName ?? "SimpleFIN") && (
+                          <span className="text-warning">
+                            {` · no new data since ${shortDay(a.balanceDate)}`}
+                          </span>
+                        )}
                     </span>
                   </span>
                   {a.balanceCents !== null && (

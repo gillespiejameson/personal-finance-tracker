@@ -27,6 +27,7 @@ import {
   setLastAttemptAt,
   setLastError,
   setLastSyncAt,
+  setLastWarnings,
   upsertLinkedAccounts,
 } from "@/lib/simplefin/store";
 import type { SfinAccount } from "@/lib/simplefin/types";
@@ -73,6 +74,8 @@ describe("simplefin store", () => {
       requestsToday: 0,
       accounts: [],
       earliestSynced: null,
+      warnings: [],
+      staleBanks: [],
       // Nothing to sync while disconnected, however stale it looks.
       shouldAutoSync: false,
     });
@@ -122,11 +125,13 @@ describe("simplefin store", () => {
     setLastAttemptAt(db, "2026-09-07T16:00:00Z");
     setLastError(db, "SimpleFIN rejected the connection");
     setHistoryFloor(db, "2026-03-19");
+    setLastWarnings(db, ["Bank X needs re-authentication"]);
     setAccessUrl(db, "https://x:y@sfin.test/simplefin", NOW);
     expect(getConnection(db, NOW)).toMatchObject({
       lastSyncAt: null,
       lastAttemptAt: null,
       lastError: null,
+      warnings: [],
     });
     expect(getHistoryFloor(db)).toBeNull();
   });
@@ -370,5 +375,21 @@ describe("simplefin store", () => {
         .values({ ...base, dedupeHash: "d", externalId: "x1" })
         .run(),
     ).toThrow(/UNIQUE/);
+  });
+
+  it("reports stale banks from the linked accounts' balance dates", () => {
+    const { db, chk } = seed();
+    setAccessUrl(db, ACCESS, NOW);
+    upsertLinkedAccounts(db, [sfin()]); // balance dated 2026-09-05
+    mapAccount(db, "ACT-1", chk.id);
+    // Synced nine days after the bank last sent anything.
+    setLastSyncAt(db, "2026-09-14T17:00:00.000Z");
+    expect(getConnection(db, NOW).staleBanks).toEqual([
+      {
+        orgName: "Test Bank",
+        lastUpdated: dayOfSeconds(1788566400),
+        accounts: ["Checking"],
+      },
+    ]);
   });
 });

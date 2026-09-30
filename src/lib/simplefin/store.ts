@@ -19,6 +19,7 @@ import {
 import { maskAccessUrl } from "./client";
 import { amountToCents } from "./map";
 import { hoursSince } from "./relative";
+import { staleBanks } from "./stale";
 import type { Connection, LinkedAccount, SfinAccount } from "./types";
 
 export const KEYS = {
@@ -30,6 +31,8 @@ export const KEYS = {
   lastAttemptAt: "simplefin_last_attempt_at",
   /** Set when a sync fails, cleared when one succeeds. */
   lastError: "simplefin_last_error",
+  /** Replaced by every regular sync, so an empty list means the last one was clean. */
+  lastWarnings: "simplefin_last_warnings",
   /** The earliest date "Load older history" has already asked the bank for. */
   historyFloor: "simplefin_history_floor",
   auto: "simplefin_auto",
@@ -41,6 +44,7 @@ const PER_CONNECTION_KEYS = [
   KEYS.lastSyncAt,
   KEYS.lastAttemptAt,
   KEYS.lastError,
+  KEYS.lastWarnings,
   KEYS.historyFloor,
 ] as const;
 
@@ -102,6 +106,14 @@ export function setLastError(db: Db, message: string | null): void {
  * The start of the oldest window already fetched, so a second "Load older
  * history" steps back from there instead of asking for the same span again.
  */
+export function getLastWarnings(db: Db): string[] {
+  return getSetting<string[]>(db, KEYS.lastWarnings, []);
+}
+
+export function setLastWarnings(db: Db, warnings: string[]): void {
+  setSetting(db, KEYS.lastWarnings, warnings);
+}
+
 export function getHistoryFloor(db: Db): string | null {
   const v = getSetting<string | null>(db, KEYS.historyFloor, null);
   return typeof v === "string" && v ? v : null;
@@ -259,6 +271,8 @@ export function getConnection(db: Db, now: Date = new Date()): Connection {
   const auto = getAuto(db);
   const lastAttemptAt = getLastAttemptAt(db);
   const requestsToday = countToday(getRequestState(db), now);
+  const linked = listLinkedAccounts(db);
+  const lastSyncAt = getLastSyncAt(db);
   // Decided here, not in the browser: the nudge only fires when the server
   // says a sync is both wanted and affordable, so a page load can never
   // start one the gate would refuse anyway.
@@ -267,14 +281,16 @@ export function getConnection(db: Db, now: Date = new Date()): Connection {
   return {
     connected,
     connectedAt: getSetting<string | null>(db, KEYS.connectedAt, null),
-    lastSyncAt: getLastSyncAt(db),
+    lastSyncAt,
     lastAttemptAt,
     lastError: getLastError(db),
     auto,
     maskedUrl: url ? maskAccessUrl(url) : null,
     requestsToday,
-    accounts: listLinkedAccounts(db),
+    accounts: linked,
     earliestSynced: earliestSyncedDate(db),
+    warnings: getLastWarnings(db),
+    staleBanks: staleBanks(linked, lastSyncAt),
     shouldAutoSync: connected && auto && stale && requestsToday < DAILY_CAP,
   };
 }
