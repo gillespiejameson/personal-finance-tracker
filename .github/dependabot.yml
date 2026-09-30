@@ -5,9 +5,17 @@ updates:
     schedule:
       interval: monthly
     open-pull-requests-limit: 5
+    ignore:
+      # Type definitions track the Node version the app runs on (Node 24).
+      - dependency-name: "@types/node"
+        update-types: [version-update:semver-major]
     groups:
       minor-and-patch:
         update-types: [minor, patch]
+        exclude-patterns:
+          # Biome is pinned exactly; its updates can change formatting and add
+          # lint rules, so each one arrives as its own pull request.
+          - "@biomejs/biome"
 
   - package-ecosystem: github-actions
     directory: /
