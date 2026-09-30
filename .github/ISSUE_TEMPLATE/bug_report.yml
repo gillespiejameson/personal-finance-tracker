@@ -1,0 +1,53 @@
+name: Bug report
+description: Something works differently than it should
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Please do not paste real bank data.** No real statements, account or card
+        numbers, names, addresses or balances — issues are public and permanent.
+        If the bug is about importing, trim the file to the header plus two or three
+        rows and replace descriptions, amounts and numbers with made-up values that
+        still show the problem (e.g. `ACME CORP SPRINGFIELD IL`, `-12.34`).
+
+        Found a security problem? Don't open an issue — see SECURITY.md.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you expected, and what you saw instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Ideally starting from `npm run seed`, so anyone can follow along.
+      placeholder: |
+        1. npm run seed
+        2. Open Transactions
+        3. ...
+    validations:
+      required: true
+  - type: textarea
+    id: sample
+    attributes:
+      label: Sanitized sample (import bugs)
+      description: Header row plus a few made-up rows in the same shape as your bank's export. Name the bank and export type (CSV, OFX, QFX).
+      render: text
+  - type: input
+    id: env
+    attributes:
+      label: Environment
+      description: OS, Node version, browser, and how you run it (`npm run app`, `npm run dev`, `npm start`)
+      placeholder: Windows 11, Node 24.2, Edge, npm run app
+    validations:
+      required: true
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy check
+      options:
+        - label: I removed or replaced all real account numbers, names, merchants and amounts.
+          required: true
