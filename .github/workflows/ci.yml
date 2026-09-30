@@ -35,5 +35,17 @@ jobs:
       - name: Test
         run: npm test
 
+      # Dates are local calendar days, so a test that hard-codes one can pass
+      # in UTC and fail for contributors elsewhere. Run at both ends of the clock.
+      - name: Test (UTC+14)
+        run: npm test
+        env:
+          TZ: Pacific/Kiritimati
+
+      - name: Test (UTC-11)
+        run: npm test
+        env:
+          TZ: Pacific/Pago_Pago
+
       - name: Build
         run: npm run build
