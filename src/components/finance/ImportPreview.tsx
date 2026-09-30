@@ -101,6 +101,7 @@ export function ImportPreview({
           </thead>
           <tbody>
             {rows.slice(0, 20).map((r, i) => (
+              // biome-ignore lint/suspicious/noArrayIndexKey: a read-only preview of parsed rows, never reordered; identical rows are legal, so position is the identity
               <tr key={`${r.date}-${i}`} className="border-t border-line">
                 <td className="px-3 py-2 tnum">{r.date}</td>
                 <td className="px-3 py-2">

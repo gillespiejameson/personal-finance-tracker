@@ -108,7 +108,7 @@ export function buildPreview(
     };
   }
 
-  if (!profile || !profile.dateCol) {
+  if (!profile?.dateCol) {
     return {
       kind: "csv",
       headers,

@@ -405,7 +405,7 @@ export function TransactionsTable({
                   <div className="bg-subtle px-5 py-2">
                     {r.splits.map((s, i) => (
                       <div
-                        key={`${r.id}-${i}-${s.categoryName}`}
+                        key={s.id}
                         className={`grid ${GRID} items-center gap-4`}
                         style={{ height: SPLIT_LINE }}
                       >

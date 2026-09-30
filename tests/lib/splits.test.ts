@@ -105,6 +105,19 @@ describe("saveSplits", () => {
       ["Groceries", -20000],
       ["Repairs & household", -1000],
     ]);
+    // Each line carries its own row id, a stable React key for the table.
+    expect(
+      listSplitsForTransactions(db, [t.id])
+        .get(t.id)
+        ?.map((s) => s.id),
+    ).toEqual(
+      db
+        .select()
+        .from(transactionSplits)
+        .orderBy(transactionSplits.id)
+        .all()
+        .map((s) => s.id),
+    );
     expect(listSplitsForTransactions(db, []).size).toBe(0);
 
     clearSplits(db, t.id);

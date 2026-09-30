@@ -178,7 +178,8 @@ describe("isOwnTransfer", () => {
     ["Payment Thank You-Mobile", "credit"],
     ["AUTOMATIC PAYMENT - THANK YOU", "credit"],
   ])("%s on %s is an own-account transfer", (d, t) =>
-    expect(isOwnTransfer(d, t)).toBe(true));
+    expect(isOwnTransfer(d, t)).toBe(true),
+  );
 
   it.each([
     ["Zelle payment to Pat house JPM12abcdefg", "checking"],
@@ -200,7 +201,8 @@ describe("isOwnTransfer", () => {
     ],
     ["KROGER #1234", "checking"],
   ])("%s on %s is spending or income, not a transfer", (d, t) =>
-    expect(isOwnTransfer(d, t)).toBe(false));
+    expect(isOwnTransfer(d, t)).toBe(false),
+  );
 
   it("rule-marks by account type: card-side wording only counts on credit accounts", () => {
     const db = openDb(":memory:");

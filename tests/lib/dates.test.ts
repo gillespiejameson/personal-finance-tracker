@@ -20,7 +20,8 @@ describe("parseDateWithFormat", () => {
     ["04.03.2026", "DMY", "2026-03-04"],
     ["20260304", "YMD", "2026-03-04"],
   ] as const)("%s as %s → %s", (raw, f, iso) =>
-    expect(parseDateWithFormat(raw, f)).toBe(iso));
+    expect(parseDateWithFormat(raw, f)).toBe(iso),
+  );
   it("rejects impossible dates", () => {
     expect(parseDateWithFormat("13/40/2026", "MDY")).toBeNull();
     expect(parseDateWithFormat("02/30/2026", "MDY")).toBeNull();

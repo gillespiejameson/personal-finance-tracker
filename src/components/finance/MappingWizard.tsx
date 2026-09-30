@@ -188,6 +188,7 @@ export function MappingWizard({ headers, sample, initial, onApply }: Props) {
           <tbody>
             {sample.slice(0, 5).map((r, i) => (
               <tr
+                // biome-ignore lint/suspicious/noArrayIndexKey: raw sample rows of a file, read-only and never reordered; they have no id
                 key={`${r[headers[0]]}-${i}`}
                 className="border-t border-line"
               >

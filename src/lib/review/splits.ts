@@ -81,6 +81,7 @@ export function saveSplits(
 }
 
 export type SplitLine = {
+  id: number;
   categoryName: string;
   color: string;
   amountCents: number;
@@ -99,6 +100,7 @@ export function listSplitsForTransactions(
   const rows = db
     .select({
       transactionId: transactionSplits.transactionId,
+      id: transactionSplits.id,
       categoryName: categories.name,
       color: categories.color,
       amountCents: transactionSplits.amountCents,

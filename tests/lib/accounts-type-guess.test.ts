@@ -13,11 +13,10 @@ describe("guessAccountType", () => {
   ])("treats %s as a credit card", (name) => {
     expect(guessAccountType(name)).toBe("credit");
   });
-  it.each([
-    "TOTAL CHECKING (0000)",
-    "EVERYDAY CHECKING",
-    "Savings",
-  ])("leaves %s as checking", (name) => {
-    expect(guessAccountType(name)).toBe("checking");
-  });
+  it.each(["TOTAL CHECKING (0000)", "EVERYDAY CHECKING", "Savings"])(
+    "leaves %s as checking",
+    (name) => {
+      expect(guessAccountType(name)).toBe("checking");
+    },
+  );
 });
