@@ -4,18 +4,16 @@ import { z } from "zod";
 import { guessAccountType } from "@/lib/accounts/type-guess";
 import { getDb } from "@/lib/db/client";
 import { accounts } from "@/lib/db/schema";
-import { claimAccessUrl } from "@/lib/simplefin/client";
+import { connectWithToken } from "@/lib/simplefin/connect";
 import {
   clearConnection,
   getConnection,
   listLinkedAccounts,
   mapAccount,
-  setAccessUrl,
   setAuto,
   setEnabled,
 } from "@/lib/simplefin/store";
 import { runSync, SYNC_FAILED_ERROR } from "@/lib/simplefin/sync";
-import { decodeSetupToken } from "@/lib/simplefin/token";
 import type { Connection, SyncOutcome } from "@/lib/simplefin/types";
 
 type Fail = { ok: false; error: string };
@@ -56,20 +54,14 @@ export async function connectAction(
   try {
     const p = tokenSchema.safeParse(input);
     if (!p.success) return { ok: false, error: "Paste a setup token." };
-    const decoded = decodeSetupToken(p.data.token);
-    if (!decoded.ok) return decoded;
-
-    const claimed = await claimAccessUrl(globalThis.fetch, decoded.claimUrl);
-    if (!claimed.ok) return claimed;
-
-    const db = getDb();
-    setAccessUrl(db, claimed.accessUrl, new Date());
-    const sync = await runSync(db, globalThis.fetch, {
-      now: new Date(),
-      automatic: false,
-    });
-    refresh();
-    return { ok: true, sync };
+    const out = await connectWithToken(
+      getDb,
+      globalThis.fetch,
+      p.data.token,
+      new Date(),
+    );
+    if (out.ok) refresh();
+    return out;
   } catch {
     // The exception could name the claim or access URL; the client sees neither.
     return FAILED;

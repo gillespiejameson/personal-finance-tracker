@@ -12,8 +12,13 @@ export const NETWORK_ERROR = "Couldn't reach SimpleFIN.";
 export const REJECTED_ERROR =
   "SimpleFIN rejected the connection; reconnect with a new setup token.";
 export const SUBSCRIPTION_ERROR = "SimpleFIN subscription needs attention.";
+/**
+ * SimpleFIN answers 403 to a setup token it has already exchanged, but its
+ * front end can also return 403 to a network it blocks (some VPNs and cloud
+ * hosts), so the message names both.
+ */
 export const CLAIM_USED_ERROR =
-  "That setup token was already used or is invalid; get a new one from SimpleFIN.";
+  "SimpleFIN refused this setup token. Each token works only once, so if it was used before, create a new one. If it's new, SimpleFIN may be blocking your network (a VPN, for example).";
 export const UNREADABLE_ERROR = "SimpleFIN returned an unreadable response.";
 
 // Bridges send `null` for a field they have nothing for, so every optional
