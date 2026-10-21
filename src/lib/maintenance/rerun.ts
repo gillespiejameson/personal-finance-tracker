@@ -155,3 +155,20 @@ export function ensurePhase9(db: Db): number | null {
   setSetting(db, "phase9_cardholder_suffix_stripped", true);
   return changed;
 }
+
+/**
+ * One-time re-resolve after the ACH label strip (2026-10-20): rows like
+ * "ACH Transaction - ACME BKG SVC LLC MONEYLINE" all cleaned to "Ach", so one
+ * merchant stood for every ACH originator and couldn't be categorized as a
+ * whole. Re-resolve every merchant, give uncategorized rows the rules they now
+ * match, and refresh bills. Returns the number of merchants changed.
+ */
+export function ensurePhase10(db: Db): number | null {
+  if (getSetting(db, "phase10_ach_label_stripped", false)) return null;
+  ensureBuiltinAliases(db);
+  const changed = reapplyMerchants(db);
+  applyRules(db); // uncategorized, unreviewed rows only (the default)
+  refreshRecurring(db);
+  setSetting(db, "phase10_ach_label_stripped", true);
+  return changed;
+}

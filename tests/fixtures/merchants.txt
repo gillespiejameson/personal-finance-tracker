@@ -43,6 +43,10 @@ Acorns Round-Ups Transfer   X9KQZ41         WEB ID: 9000000001 => Acorns Round-U
 APPLECARD GSBANK PAYMENT    1234567         WEB ID: 9999999999 => Applecard Gsbank Payment
 AFFIRM.COM PAYMENTS 185-87654321 CA          06/18 => Affirm Payments
 fnb              ACH XFER                   WEB ID: 123456789 => Fnb Ach Xfer
+ACH Transaction - ACME BKG SVC LLC MONEYLINE => Acme Bkg Svc Llc Moneyline
+ACH Transaction - VENMO PAYMENT => Venmo Payment
+ACH DEBIT: COMCAST CABLE 1234567 => Comcast Cable
+ACH - IRS USATAXPYMT => Irs Usataxpymt
 Online Transfer from CHK ...4321 transaction#: 12345678901 => Online Transfer From Chk
 Online Transfer to CHK ...4321 transaction#: 10987654321 12/10 => Online Transfer TO Chk
 # payroll and income
