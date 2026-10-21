@@ -8,6 +8,7 @@ import {
   ensurePhase3,
   ensurePhase7,
   ensurePhase9,
+  ensurePhase10,
 } from "@/lib/maintenance/rerun";
 import { queueCount } from "@/lib/review/queue";
 import { listWeekStarts } from "@/lib/ritual/store";
@@ -21,6 +22,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   ensurePhase3(db);
   ensurePhase7(db);
   ensurePhase9(db);
+  ensurePhase10(db);
   const reviewCount = queueCount(db);
   const gate = budgetGate(db, todayIso());
   const reviewDue = reviewStatus(listWeekStarts(db), todayIso()).due;

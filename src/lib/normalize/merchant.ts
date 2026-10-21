@@ -77,6 +77,15 @@ const SPECIAL: [RegExp, string][] = [
 const P2P =
   /^(?:zelle|venmo|paypal)\s+(?:payment|transfer)?\s*(?:to|from)\s+(.+)$/i;
 
+/**
+ * "ACH Transaction - ACME BKG SVC LLC MONEYLINE": the bank's generic ACH label
+ * in front of the company actually paid or paying. Without this the
+ * "transaction" tail takes everything after the label and every ACH row
+ * cleans to "Ach", one merchant for dozens of unrelated companies.
+ */
+const ACH_LABEL =
+  /^ach\s+(?:(?:transaction|trans|debit|credit|payment|pmt|withdrawal|deposit|transfer|xfer)\s*)?[-:]\s*(?=\S)/i;
+
 const EMPTY_CITIES: ReadonlySet<string> = new Set<string>();
 /** "06/08 SKYWARD AI ..." — a posting date left over after the prefixes go. */
 const LEADING_DATE = /^\d{1,2}\/\d{1,2}(?:\/\d{2,4})?\s+/;
@@ -262,6 +271,7 @@ export function cleanMerchant(raw: string, opts: CleanOptions = {}): string {
 
   const payee = payeeFromP2P(s);
   if (payee !== null) s = payee;
+  s = s.replace(ACH_LABEL, "");
 
   for (const re of TAILS) s = s.replace(re, "");
   s = s.trim();
